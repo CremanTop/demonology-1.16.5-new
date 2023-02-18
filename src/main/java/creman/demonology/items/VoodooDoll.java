@@ -1,10 +1,12 @@
 package creman.demonology.items;
 
 import creman.demonology.utils.Materials;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -18,6 +20,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class VoodooDoll extends ItemMadeOfMaterial
@@ -28,80 +31,54 @@ public class VoodooDoll extends ItemMadeOfMaterial
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
+    @MethodsReturnNonnullByDefault
+    @ParametersAreNonnullByDefault
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
     {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        PlayerEntity target = null;
-        if (!worldIn.isRemote)
+        ItemStack heldStack = player.getHeldItem(hand);
+        if (world.isRemote)
         {
-            CompoundNBT nbt = new CompoundNBT();
-            nbt.putString("name", playerIn.getName().getString());
-            nbt.putBoolean("isInverted", false);
-            itemstack.setTag(nbt);
-
-            if (itemstack.hasTag())
-            {
-                if (!itemstack.getTag().getString("name").isEmpty())
-                {
-                    List<? extends PlayerEntity> players = worldIn.getPlayers();
-                    for(PlayerEntity player : players)
-                    {
-                        if(player.getName().getString().equals(itemstack.getTag().getString("name")))
-                        {
-                            target = player;
-                        }
-                    }
-                    if (target == null)
-                    {
-                        playerIn.sendMessage(new TranslationTextComponent("demonology.message.voodoo.not_found_player", itemstack.getTag().getString("name")), null);
-                        return ActionResult.resultSuccess(itemstack);
-                    }
-                }
-            }
-
-            if (target != null)
-            {
-                //itemstack.setDamage(itemstack.getDamage() + 1);
-                //itemstack.attemptDamageItem(1, worldIn.rand, (ServerPlayerEntity) playerIn);
-                itemstack.damageItem(1, playerIn, (entity) -> entity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
-                if(!itemstack.getTag().getBoolean("isInverted"))
-                {
-                    if (itemstack.getDamage() > 0)
-                    {
-                        target.attackEntityFrom(DamageSource.MAGIC, 4.0F);
-                    }
-                    else
-                    {
-                        target.attackEntityFrom(DamageSource.MAGIC, Float.MAX_VALUE);
-                    }
-                }
-                else
-                {
-                    if (itemstack.getDamage() > 0)
-                    {
-                        target.setHealth(target.getHealth() + 6.0F);
-                    }
-                    else
-                    {
-                        target.setHealth(target.getMaxHealth());
-                    }
-                }
-                //worldIn.playSound((EntityPlayer) null, playerIn.posX, playerIn.posY, playerIn.posZ, Sounds.PIPE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
-            }
+            return ActionResult.resultPass(heldStack);
         }
-        return ActionResult.resultSuccess(itemstack);
+        PlayerEntity target;
+
+        CompoundNBT nbt = heldStack.getTag();
+        nbt.putString("name", player.getName().getString());
+        nbt.putBoolean("isInverted", false);
+        assert world.getServer() != null;
+        target = world.getServer().getPlayerList().getPlayerByUsername(nbt.getString("name"));
+
+        heldStack.damageItem(1, player, (entity) -> entity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+        if(nbt.getBoolean("isInverted"))
+        {
+            target.setHealth(heldStack.getDamage() > 0 ? target.getHealth() + 6.0F : target.getMaxHealth());
+        }
+        else
+        {
+            target.attackEntityFrom(DamageSource.MAGIC, heldStack.getDamage() > 0 ? 4.0F : Float.MAX_VALUE);
+        }
+        //worldIn.playSound((EntityPlayer) null, playerIn.posX, playerIn.posY, playerIn.posZ, Sounds.PIPE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
+        return ActionResult.resultSuccess(heldStack);
     }
 
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker)
+    {
         stack.damageItem(1, attacker, (entity) -> entity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
         return true;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        if (!stack.hasTag()) return;
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    {
+        if (!stack.hasTag())
+        {
+            return;
+        }
         CompoundNBT nbt = stack.getTag();
-        if(nbt.getString("name").isEmpty())return;
+        if(nbt.getString("name").isEmpty())
+        {
+            return;
+        }
         tooltip.add(ITextComponent.getTextComponentOrEmpty(TextFormatting.GRAY + I18n.format("demonology.information.voodoo", nbt.getString("name"))));
     }
 
