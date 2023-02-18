@@ -1,0 +1,8 @@
+{
+    "itemGroup.demonology_tab": "Demonology",
+    "item.demonology.voodoo_doll": "Voodoo Doll",
+
+    "demonology.information.voodoo": "Soul - %d",
+
+    "demonology.message.voodoo.not_found_player": "There is no %d player in the world"
+}

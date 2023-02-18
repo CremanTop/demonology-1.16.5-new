@@ -1,0 +1,42 @@
+{
+    "result": {
+        "item": "demonology:darkness_totem"
+    },
+    "pattern": [
+        " a ",
+        " b ",
+        " b "
+    ],
+    "type": "forge:ore_shaped",
+    "key": {
+        "a": {
+            "item": "minecraft:ender_pearl"
+        },
+        "b": [
+            {
+                "item": "minecraft:planks",
+                "data": 0
+            },
+            {
+                "item": "minecraft:planks",
+                "data": 1
+            },
+            {
+                "item": "minecraft:planks",
+                "data": 2
+            },
+            {
+                "item": "minecraft:planks",
+                "data": 3
+            },
+            {
+                "item": "minecraft:planks",
+                "data": 4
+            },
+            {
+                "item": "minecraft:planks",
+                "data": 5
+            }
+        ]
+    }
+}

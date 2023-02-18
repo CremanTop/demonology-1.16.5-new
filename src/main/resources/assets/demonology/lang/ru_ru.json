@@ -1,0 +1,8 @@
+{
+    "itemGroup.demonology_tab": "Демонология",
+    "item.demonology.voodoo_doll": "Кукла Вуду",
+
+    "demonology.information.voodoo": "Душа - %d",
+
+    "demonology.message.voodoo.not_found_player": "В мире нет игрока %d"
+}

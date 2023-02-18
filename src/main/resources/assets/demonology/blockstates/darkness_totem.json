@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "dirty=false,facing=north": { "model": "demonology:darkness_totem" },
+        "dirty=false,facing=south": { "model": "demonology:darkness_totem", "y": 180 },
+        "dirty=false,facing=west":  { "model": "demonology:darkness_totem", "y": 270 },
+        "dirty=false,facing=east":  { "model": "demonology:darkness_totem", "y": 90 },
+        "dirty=true,facing=north": { "model": "demonology:darkness_totem_dirty" },
+        "dirty=true,facing=south": { "model": "demonology:darkness_totem_dirty", "y": 180 },
+        "dirty=true,facing=west":  { "model": "demonology:darkness_totem_dirty", "y": 270 },
+        "dirty=true,facing=east":  { "model": "demonology:darkness_totem_dirty", "y": 90 }
+    }
+}

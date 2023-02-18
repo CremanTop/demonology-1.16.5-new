@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "demonology:blocks/block_ancient_fragment"
+    }
+}
